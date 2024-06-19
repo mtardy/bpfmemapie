@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 
@@ -50,7 +51,7 @@ func main() {
 		if rawThreshold != "" {
 			threshold, err = strconv.ParseFloat(rawThreshold, 64)
 			if err != nil {
-				fmt.Println(fmt.Errorf("failed to parse threshold, using default value %f: %w", defaultThreshold, err))
+				fmt.Fprintln(os.Stderr, fmt.Errorf("failed to parse threshold, using default value %f: %w", defaultThreshold, err))
 			}
 		}
 
@@ -61,5 +62,9 @@ func main() {
 
 	fmt.Printf("Listening on http://localhost:%s/\n", webserverPort)
 
-	http.ListenAndServe(fmt.Sprintf("localhost:%s", webserverPort), nil)
+	err := http.ListenAndServe(fmt.Sprintf("localhost:%s", webserverPort), nil)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
 }
