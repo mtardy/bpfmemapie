@@ -29,3 +29,12 @@ The pie chart is interactive, you can click on the legend to hide/show entries
 or hover on the pie to see the tooltip. You can also change how the "others"
 category using the `threshold` URL query, for example 
 http://localhost:8080/?threshold=1.
+
+## Alternative
+
+If you don't need the pie chart part, you can just use `bpftool` and `jq` to
+see the same statistics:
+
+```shell
+sudo bpftool map -j | jq ' group_by(.name) | map({name: .[0].name, total_bytes_memlock: map(.bytes_memlock | tonumber) | add, maps: length}) | sort_by(.total_bytes_memlock)'
+```
